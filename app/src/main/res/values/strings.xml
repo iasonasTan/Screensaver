@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Screensaver</string>
+    <string name="users_image_background">Image that user selected.</string>
+    <string name="settings_button_icon">settings button icon</string>
+    <string name="choose_font">Choose Font:</string>
+    <string name="back">Back</string>
+    <string name="select_background_image">Select background image</string>
+    <string name="remove_background">Remove background</string>
+    <string name="change_clock_text_color">Change clock text color</string>
+    <string name="start">Start</string>
+    <string name="stop">Pause</string>
+    <string name="reset">Reset</string>
+    <string name="show_text_clock">Show text clock</string>
+    <string name="show_timer">Show timer</string>
+    <string name="show_battery">Show battery</string>
+</resources>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:contentDescription="@string/users_image_background"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextClock
+        android:id="@+id/text_clock"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:textSize="64sp"
+        android:layout_marginBottom="40dp"
+        android:format12Hour="hh:mm:ss"/>
+
+    <ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/settings_button_icon"
+        android:textColor="@color/white"
+        android:src="@drawable/settings_icon"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_below="@id/text_clock"
+        android:layout_centerInParent="true"
+        android:text="00:00"
+        android:id="@+id/timer_textview"
+        android:layout_width="wrap_content"
+        android:textSize="44sp"
+        android:layout_height="wrap_content"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:id="@+id/timer_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/timer_textview">
+
+        <com.app.screensaver.MyButton
+            android:text="@string/start"
+            android:id="@+id/start_timer_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <com.app.screensaver.MyButton
+            android:text="@string/stop"
+            android:id="@+id/stop_timer_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <com.app.screensaver.MyButton
+            android:text="@string/reset"
+            android:id="@+id/reset_timer_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/battery_textview"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="70dp"
+        android:textSize="32sp"
+        android:text="0%"
+        android:layout_height="wrap_content"
+        tools:ignore="HardcodedText" />
+
+</RelativeLayout>

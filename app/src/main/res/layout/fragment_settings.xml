@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="30dp"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/font_spinner_container"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:textColor="@color/white"
+                android:text="@string/choose_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/font_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <com.app.screensaver.MyButton
+            android:layout_marginTop="15dp"
+            android:id="@+id/select_image_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/select_background_image" />
+
+        <com.app.screensaver.MyButton
+            android:id="@+id/remove_image_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_background" />
+
+        <com.app.screensaver.MyButton
+            android:id="@+id/change_color_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/change_clock_text_color" />
+
+        <CheckBox
+            android:id="@+id/text_clock_visible"
+            android:text="@string/show_text_clock"
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/timer_visible"
+            android:text="@string/show_timer"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:textColor="@color/white"
+            android:id="@+id/battery_visible"
+            android:text="@string/show_battery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.app.screensaver.MyButton
+            android:id="@+id/back_button"
+            android:text="@string/back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</ScrollView>
