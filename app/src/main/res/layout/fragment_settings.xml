@@ -69,6 +69,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/show_seconds"
+            android:textColor="@color/white"
+            android:text="@string/show_seconds" />
+
         <com.app.screensaver.MyButton
             android:id="@+id/back_button"
             android:text="@string/back"

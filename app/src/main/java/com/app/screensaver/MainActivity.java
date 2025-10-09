@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         configSystemUI();
+        setShowWhenLocked(true);
+        setTurnScreenOn(true);
+        //getWindow().addFlags(android.R.attr.keepScreenOn|android.R.attr.showWhenLocked|android.R.attr.turnScreenOn);
 
         mFragmentsList.add(new ScreensaverFragment());
         mFragmentsList.add(new SettingsFragment());
@@ -65,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter=new IntentFilter("CHANGE_FRAGMENT");
         ContextCompat.registerReceiver(this, broadcastReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
-        setFragment(ScreensaverFragment.class);
         getFragment(ScreensaverFragment.class).loadSavedPreferences(getApplicationContext());
+        setFragment(ScreensaverFragment.class);
         grantPermissions();
     }
 

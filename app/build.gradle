@@ -4,15 +4,14 @@ plugins {
 
 android {
     namespace 'com.app.screensaver'
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId "com.app.screensaver"
         minSdk 34
         targetSdk 36
         versionCode 6
-        versionName "6.9"
-
+        versionName "7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

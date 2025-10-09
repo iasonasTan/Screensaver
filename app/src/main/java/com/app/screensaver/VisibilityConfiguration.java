@@ -6,18 +6,20 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 public final class VisibilityConfiguration implements Parcelable {
-    public final boolean clock, battery, timer;
+    public final boolean clock, battery, timer, seconds;
 
-    public VisibilityConfiguration(boolean clock, boolean battery, boolean timer) {
+    public VisibilityConfiguration(boolean clock, boolean battery, boolean timer, boolean seconds) {
         this.clock = clock;
         this.battery = battery;
         this.timer = timer;
+        this.seconds = seconds;
     }
 
     private VisibilityConfiguration(Parcel in) {
         clock = in.readBoolean();
         battery = in.readBoolean();
         timer = in.readBoolean();
+        seconds = in.readBoolean();
     }
 
     public static final Creator<VisibilityConfiguration> CREATOR = new Creator<>() {
@@ -42,5 +44,14 @@ public final class VisibilityConfiguration implements Parcelable {
         dest.writeBoolean(clock);
         dest.writeBoolean(battery);
         dest.writeBoolean(timer);
+        dest.writeBoolean(seconds);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(
+                "VisibilityConfiguration{clock=%s, battery=%s, timer=%s, seconds=%s}"
+                , clock, battery, timer, seconds);
     }
 }

@@ -1,5 +1,6 @@
 package com.app.screensaver;
 
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,9 +58,7 @@ public class ScreensaverFragment extends Fragment {
 
     // listening on action CHANGE_FONT, REMOVE_IMAGE, CHANGE_COLOR, CHANGE_VISIBILITY and CHANGE_IMAGE
     private final BroadcastReceiver mBroadcastReceiver =new BroadcastReceiver() {
-        /*
-        stores taken values into variables and applies them on resume.
-         */
+        /* stores taken values into variables and applies them on resume. */
         @Override
         public void onReceive(Context context, Intent intent) {
             switch(Objects.requireNonNull(intent.getAction())) {
@@ -79,6 +79,7 @@ public class ScreensaverFragment extends Fragment {
                     break;
                 case "CHANGE_VISIBILITY":
                     mVisibilityConfig = intent.getParcelableExtra("configuration", VisibilityConfiguration.class);
+                    Log.d("visibility_udpate", "visibility config updated: "+mVisibilityConfig);
                     break;
             }
             saveSelectedPreferences(context);
@@ -107,9 +108,15 @@ public class ScreensaverFragment extends Fragment {
         mTimerView=view.findViewById(R.id.timer_textview);
         mBatteryView=view.findViewById(R.id.battery_textview);
         view.findViewById(R.id.settings_button).setOnClickListener(ignored -> {
-            Intent intent=new Intent("CHANGE_FRAGMENT").setPackage(requireContext().getPackageName());
-            intent.putExtra("fragmentClass", SettingsFragment.class.getName());
-            requireContext().sendBroadcast(intent);
+            KeyguardManager keyguardManager = requireContext().getSystemService(KeyguardManager.class);
+            if(!keyguardManager.isDeviceLocked()) {
+                Intent intent = new Intent("CHANGE_FRAGMENT").setPackage(requireContext().getPackageName());
+                intent.putExtra("fragmentClass", SettingsFragment.class.getName());
+                requireContext().sendBroadcast(intent);
+            } else {
+                Log.w("dev-test", "Cannot access settings because device is locked!");
+                Toast.makeText(requireContext(), R.string.settings_access_denied, Toast.LENGTH_LONG).show();
+            }
         });
         IntentFilter intentFilter=new IntentFilter("CHANGE_FONT");
         intentFilter.addAction("CHANGE_IMAGE");
@@ -127,6 +134,7 @@ public class ScreensaverFragment extends Fragment {
         mResetButton = view.findViewById(R.id.reset_timer_button);
         mStopButton = view.findViewById(R.id.stop_timer_button);
         mStartButton = view.findViewById(R.id.start_timer_button);
+
         mStartButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TimerService.class);
             intent.setAction("START");
@@ -179,6 +187,7 @@ public class ScreensaverFragment extends Fragment {
             preferencesEditor.putBoolean("clockVisible", mVisibilityConfig.clock);
             preferencesEditor.putBoolean("timerVisible", mVisibilityConfig.timer);
             preferencesEditor.putBoolean("batteryVisible", mVisibilityConfig.battery);
+            preferencesEditor.putBoolean("secondsVisible", mVisibilityConfig.seconds);
         }
         preferencesEditor.apply();
     }
@@ -199,7 +208,8 @@ public class ScreensaverFragment extends Fragment {
         boolean clock=prefs.getBoolean("clockVisible", true);
         boolean battery=prefs.getBoolean("batteryVisible", true);
         boolean timer=prefs.getBoolean("timerVisible", true);
-        mVisibilityConfig=new VisibilityConfiguration(clock, battery, timer);
+        boolean seconds=prefs.getBoolean("secondsVisible", true);
+        mVisibilityConfig=new VisibilityConfiguration(clock, battery, timer, seconds);
     }
 
     void updateTypefaces() {
@@ -216,6 +226,7 @@ public class ScreensaverFragment extends Fragment {
         setTextColor();
         updateVisibility();
         updateBackgroundImage(requireContext());
+        mClockView.setFormat12Hour(mVisibilityConfig.seconds?"hh:mm:ss":"hh:mm");
     }
 
     private void updateVisibility() {
