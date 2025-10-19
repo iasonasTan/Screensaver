@@ -13,14 +13,18 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class TimerService extends Service {
+    static final String ACTION_START = "screensaver.timer.START";
+    static final String ACTION_STOP  = "screensaver.timer.STOP";
+    static final String ACTION_RESET = "screensaver.timer.RESET";
+
     private long mStartTime = -1, mPauseTime = -1, mPausedDuration = 0;
     private boolean mRunning = false;
     private Handler mHandler;
     private Runnable mTimeRunnable;
 
     private void sendTime(long time) {
-        Intent intent = new Intent("UPDATE_TIME").setPackage(getPackageName());
-        intent.putExtra("time", time);
+        Intent intent = new Intent(ScreensaverFragment.ACTION_UPDATE_TIME).setPackage(getPackageName());
+        intent.putExtra(ScreensaverFragment.TIME_EXTRA, time);
         sendBroadcast(intent);
         Log.d("dev-test", "Sending time " + time);
     }
@@ -30,7 +34,7 @@ public class TimerService extends Service {
         if (intent == null) return START_STICKY;
         String action = intent.getAction();
         switch (Objects.requireNonNull(action)) {
-            case "START":
+            case ACTION_START:
                 if (mPauseTime != -1) {
                     mPausedDuration += System.currentTimeMillis() - mPauseTime;
                     mPauseTime = -1;
@@ -40,14 +44,14 @@ public class TimerService extends Service {
                 mRunning = true;
                 mHandler.post(mTimeRunnable);
                 break;
-            case "PAUSE":
+            case ACTION_STOP:
                 if (mRunning) {
                     mPauseTime = System.currentTimeMillis();
                     mRunning = false;
                     mHandler.removeCallbacks(mTimeRunnable);
                 }
                 break;
-            case "RESET":
+            case ACTION_RESET:
                 mRunning = false;
                 mStartTime = -1;
                 mPauseTime = -1;

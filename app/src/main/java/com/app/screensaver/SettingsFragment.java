@@ -57,12 +57,12 @@ public class SettingsFragment extends Fragment {
                 Uri imageUri=result.getData().getData();
                 if(imageUri!=null) {
                     // change fragment
-                    Intent changeFragmentIntent=new Intent("CHANGE_FRAGMENT").setPackage(requireContext().getPackageName());
-                    changeFragmentIntent.putExtra("fragmentClass", ScreensaverFragment.class.getName());
+                    Intent changeFragmentIntent=new Intent(MainActivity.ACTION_CHANGE_FRAGMENT).setPackage(requireContext().getPackageName());
+                    changeFragmentIntent.putExtra(MainActivity.FRAGMENT_CLASS_EXTRA, ScreensaverFragment.class.getName());
                     requireContext().sendBroadcast(changeFragmentIntent);
                     // change image
-                    Intent changeImageIntent=new Intent("CHANGE_IMAGE").setPackage(requireContext().getPackageName());
-                    changeImageIntent.putExtra("imageUri", imageUri.toString());
+                    Intent changeImageIntent=new Intent(ScreensaverFragment.ACTION_CHANGE_IMAGE).setPackage(requireContext().getPackageName());
+                    changeImageIntent.putExtra(ScreensaverFragment.IMAGE_URI_EXTRA, imageUri.toString());
                     Log.d("dev-test", "Sending new image uri "+imageUri);
                     requireContext().sendBroadcast(changeImageIntent);
                 }
@@ -81,8 +81,8 @@ public class SettingsFragment extends Fragment {
 
     private void setOnClickListeners(View view) {
         view.findViewById(R.id.back_button).setOnClickListener(ignored -> {
-            Intent intent = new Intent("CHANGE_FRAGMENT").setPackage(requireContext().getPackageName());
-            intent.putExtra("fragmentClass", ScreensaverFragment.class.getName());
+            Intent intent = new Intent(MainActivity.ACTION_CHANGE_FRAGMENT).setPackage(requireContext().getPackageName());
+            intent.putExtra(MainActivity.FRAGMENT_CLASS_EXTRA, ScreensaverFragment.class.getName());
             sendVisibilityConfiguration();
             requireContext().sendBroadcast(intent);
         });
@@ -94,7 +94,7 @@ public class SettingsFragment extends Fragment {
         });
 
         view.findViewById(R.id.remove_image_button).setOnClickListener(v -> {
-            Intent intent=new Intent("REMOVE_IMAGE").setPackage(requireContext().getPackageName());
+            Intent intent=new Intent(ScreensaverFragment.ACTION_REMOVE_IMAGE).setPackage(requireContext().getPackageName());
             requireContext().sendBroadcast(intent);
         });
 
@@ -103,8 +103,8 @@ public class SettingsFragment extends Fragment {
             new yuku.ambilwarna.AmbilWarnaDialog(requireContext(), initialColor, new yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener() {
                 @Override
                 public void onOk(yuku.ambilwarna.AmbilWarnaDialog dialog, int color) {
-                    Intent intent=new Intent("CHANGE_COLOR").setPackage(requireContext().getPackageName());
-                    intent.putExtra("color", color);
+                    Intent intent=new Intent(ScreensaverFragment.ACTION_CHANGE_COLOR).setPackage(requireContext().getPackageName());
+                    intent.putExtra(ScreensaverFragment.COLOR_EXTRA, color);
                     requireContext().sendBroadcast(intent);
                 }
 
@@ -147,8 +147,8 @@ public class SettingsFragment extends Fragment {
                     return;
                 }
                 ContainerView containerView = (ContainerView) parent.getItemAtPosition(position);
-                Intent intent = new Intent("CHANGE_FONT").setPackage(requireContext().getPackageName());
-                intent.putExtra("fontID", containerView.getKey());
+                Intent intent = new Intent(ScreensaverFragment.ACTION_CHANGE_FONT).setPackage(requireContext().getPackageName());
+                intent.putExtra(ScreensaverFragment.FONT_RES_ID_EXTRA, containerView.getKey());
                 requireContext().sendBroadcast(intent);
             }
 
@@ -156,7 +156,8 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        int savedFontId = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("font", R.font.libertinus_serif_bold);
+        int savedFontId = requireContext().getSharedPreferences(ScreensaverFragment.DEFAULT_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                .getInt(ScreensaverFragment.FONT_RES_ID_EXTRA, R.font.libertinus_serif_bold);
         int savedFontIndex = fontIDs.indexOf(savedFontId);
         fontSpinner.setSelection(savedFontIndex);
     }
@@ -184,9 +185,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void sendVisibilityConfiguration() {
-        Intent intent=new Intent("CHANGE_VISIBILITY").setPackage(requireContext().getPackageName());
+        Intent intent=new Intent(ScreensaverFragment.ACTION_CHANGE_VISIBILITY).setPackage(requireContext().getPackageName());
         Parcelable parcelable=new VisibilityConfiguration(mClockCB.isChecked(), mBatteryCB.isChecked(), mTimerCB.isChecked(), mSecsCB.isChecked());
-        intent.putExtra("configuration", parcelable);
+        intent.putExtra(ScreensaverFragment.VISIBILITY_CONFIG_EXTRA, parcelable);
         requireContext().sendBroadcast(intent);
     }
 

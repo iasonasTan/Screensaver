@@ -33,6 +33,23 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class ScreensaverFragment extends Fragment {
+    static final String ACTION_CHANGE_FONT       = "screensaver.CHANGE_FONT";
+    static final String FONT_RES_ID_EXTRA        = "screensaver.FONT_RES_ID_EXTRA";
+    static final String ACTION_CHANGE_IMAGE      = "screensaver.CHANGE_IMAGE";
+    static final String IMAGE_URI_EXTRA          = "screensaver.IMAGE_URI_EXTRA";
+    static final String ACTION_CHANGE_COLOR      = "screensaver.CHANGE_COLOR";
+    static final String COLOR_EXTRA              = "screensaver.COLOR_EXTRA";
+    static final String ACTION_CHANGE_VISIBILITY = "screensaver.CHANGE_VISIBILITY";
+    static final String VISIBILITY_CONFIG_EXTRA  = "screensaver.VISIBILITY_CONFIG_EXTRA";
+    static final String ACTION_REMOVE_IMAGE      = "screensaver.REMOVE_IMAGE";
+    static final String ACTION_UPDATE_TIME       = "screensaver.UPDATE_TIME";
+    static final String TIME_EXTRA               = "screensaver.TIME_EXTRA";
+    static final String DEFAULT_PREFERENCES_NAME = "screensaver.prefs.MAIN_PREFS";
+    static final String CLOCK_VISIBLE_EXTRA      = "screensaver.conf.TIME_VISIBLE";
+    static final String SECONDS_VISIBLE_EXTRA    = "screensaver.conf.SECONDS_VISIBLE";
+    static final String TIMER_VISIBLE_EXTRA      = "screensaver.conf.TIMER_VISIBLE";
+    static final String BATTERY_VISIBLE_EXTRA    = "screensaver.conf.BATTERY_PERC";
+
     // text
     private TextClock mClockView;
     private TextView mTimerView, mBatteryView;
@@ -62,24 +79,24 @@ public class ScreensaverFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch(Objects.requireNonNull(intent.getAction())) {
-                case "CHANGE_FONT":
-                    mFontId = intent.getIntExtra("fontID", R.font.libertinusserif_regular);
+                case ACTION_CHANGE_FONT:
+                    mFontId = intent.getIntExtra(FONT_RES_ID_EXTRA, R.font.libertinusserif_regular);
                     break;
-                case "CHANGE_IMAGE":
-                    mImageUri = Uri.parse(intent.getStringExtra("imageUri"));
+                case ACTION_CHANGE_IMAGE:
+                    mImageUri = Uri.parse(intent.getStringExtra(IMAGE_URI_EXTRA));
                     Log.d("dev-test", "Received image uri "+mImageUri.toString());
                     break;
-                case "REMOVE_IMAGE":
+                case ACTION_REMOVE_IMAGE:
                     mImageUri = null;
                     Log.d("dev-test", "Removed background image");
                     break;
-                case "CHANGE_COLOR":
-                    mTextColor = intent.getIntExtra("color", Color.WHITE);
+                case ACTION_CHANGE_COLOR:
+                    mTextColor = intent.getIntExtra(COLOR_EXTRA, Color.WHITE);
                     Log.d("dev-test", "Changed clock color to "+ mTextColor);
                     break;
-                case "CHANGE_VISIBILITY":
-                    mVisibilityConfig = intent.getParcelableExtra("configuration", VisibilityConfiguration.class);
-                    Log.d("visibility_udpate", "visibility config updated: "+mVisibilityConfig);
+                case ACTION_CHANGE_VISIBILITY:
+                    mVisibilityConfig = intent.getParcelableExtra(VISIBILITY_CONFIG_EXTRA, VisibilityConfiguration.class);
+                    Log.d("visibility_update", "visibility config updated: "+mVisibilityConfig);
                     break;
             }
             saveSelectedPreferences(context);
@@ -90,7 +107,7 @@ public class ScreensaverFragment extends Fragment {
     private final BroadcastReceiver mTimeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mTimerView.setText(TimerService.longToTime(intent.getLongExtra("time", 0)));
+            mTimerView.setText(TimerService.longToTime(intent.getLongExtra(TIME_EXTRA, 0)));
         }
     };
 
@@ -110,26 +127,28 @@ public class ScreensaverFragment extends Fragment {
         view.findViewById(R.id.settings_button).setOnClickListener(ignored -> {
             KeyguardManager keyguardManager = requireContext().getSystemService(KeyguardManager.class);
             if(!keyguardManager.isDeviceLocked()) {
-                Intent intent = new Intent("CHANGE_FRAGMENT").setPackage(requireContext().getPackageName());
-                intent.putExtra("fragmentClass", SettingsFragment.class.getName());
+                Intent intent = new Intent(MainActivity.ACTION_CHANGE_FRAGMENT).setPackage(requireContext().getPackageName());
+                intent.putExtra(MainActivity.FRAGMENT_CLASS_EXTRA, SettingsFragment.class.getName());
                 requireContext().sendBroadcast(intent);
             } else {
                 Log.w("dev-test", "Cannot access settings because device is locked!");
                 Toast.makeText(requireContext(), R.string.settings_access_denied, Toast.LENGTH_LONG).show();
             }
         });
-        IntentFilter intentFilter=new IntentFilter("CHANGE_FONT");
-        intentFilter.addAction("CHANGE_IMAGE");
-        intentFilter.addAction("REMOVE_IMAGE");
-        intentFilter.addAction("CHANGE_COLOR");
-        intentFilter.addAction("CHANGE_VISIBILITY");
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ACTION_CHANGE_FONT);
+        intentFilter.addAction(ACTION_CHANGE_IMAGE);
+        intentFilter.addAction(ACTION_REMOVE_IMAGE);
+        intentFilter.addAction(ACTION_CHANGE_COLOR);
+        intentFilter.addAction(ACTION_CHANGE_VISIBILITY);
         ContextCompat.registerReceiver(requireContext(), mBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
-        IntentFilter timeReceiverFilter=new IntentFilter("UPDATE_TIME");
+        IntentFilter timeReceiverFilter=new IntentFilter(ACTION_UPDATE_TIME);
         ContextCompat.registerReceiver(requireContext(), mTimeReceiver, timeReceiverFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         requireContext().registerReceiver(mBatteryReceiver, filter);
+        ContextCompat.registerReceiver(requireContext(), mBatteryReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
         mResetButton = view.findViewById(R.id.reset_timer_button);
         mStopButton = view.findViewById(R.id.stop_timer_button);
@@ -137,17 +156,17 @@ public class ScreensaverFragment extends Fragment {
 
         mStartButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TimerService.class);
-            intent.setAction("START");
+            intent.setAction(TimerService.ACTION_START);
             requireContext().startService(intent);
         });
         mStopButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TimerService.class);
-            intent.setAction("PAUSE");
+            intent.setAction(TimerService.ACTION_STOP);
             requireContext().startService(intent);
         });
         mResetButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TimerService.class);
-            intent.setAction("RESET");
+            intent.setAction(TimerService.ACTION_RESET);
             requireContext().startService(intent);
         });
     }
@@ -178,37 +197,37 @@ public class ScreensaverFragment extends Fragment {
     }
 
     void saveSelectedPreferences(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(DEFAULT_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor preferencesEditor=preferences.edit();
-        preferencesEditor.putString("background_image", mImageUri!=null?mImageUri.toString():"null");
-        if(mFontId!=0) preferencesEditor.putInt("font", mFontId);
-        if(mTextColor !=0) preferencesEditor.putInt("color", mTextColor);
+        preferencesEditor.putString(IMAGE_URI_EXTRA, mImageUri!=null?mImageUri.toString():"null");
+        if(mFontId!=0) preferencesEditor.putInt(FONT_RES_ID_EXTRA, mFontId);
+        if(mTextColor !=0) preferencesEditor.putInt(COLOR_EXTRA, mTextColor);
         if(mVisibilityConfig!=null){
-            preferencesEditor.putBoolean("clockVisible", mVisibilityConfig.clock);
-            preferencesEditor.putBoolean("timerVisible", mVisibilityConfig.timer);
-            preferencesEditor.putBoolean("batteryVisible", mVisibilityConfig.battery);
-            preferencesEditor.putBoolean("secondsVisible", mVisibilityConfig.seconds);
+            preferencesEditor.putBoolean(CLOCK_VISIBLE_EXTRA, mVisibilityConfig.clock);
+            preferencesEditor.putBoolean(TIMER_VISIBLE_EXTRA, mVisibilityConfig.timer);
+            preferencesEditor.putBoolean(BATTERY_VISIBLE_EXTRA, mVisibilityConfig.battery);
+            preferencesEditor.putBoolean(SECONDS_VISIBLE_EXTRA, mVisibilityConfig.seconds);
         }
         preferencesEditor.apply();
     }
 
     void loadSavedPreferences(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(ScreensaverFragment.DEFAULT_PREFERENCES_NAME, Context.MODE_PRIVATE);
         // load image
-        String resourceString=prefs.getString("background_image", null);
+        String resourceString=prefs.getString(IMAGE_URI_EXTRA, null);
         mImageUri = resourceString != null && !resourceString.equals("null") ?
-                Uri.parse(prefs.getString("background_image", null)) : null;
+                Uri.parse(prefs.getString(IMAGE_URI_EXTRA, null)) : null;
         // load font
-        int loadedFontResId = prefs.getInt("font", R.font.libertinusserif_regular);
+        int loadedFontResId = prefs.getInt(FONT_RES_ID_EXTRA, R.font.libertinusserif_regular);
         mFontId = loadedFontResId!=0?loadedFontResId:R.font.libertinusserif_regular;
         // load color
-        int loadedFontColor=prefs.getInt("color", Color.WHITE);
+        int loadedFontColor=prefs.getInt(COLOR_EXTRA, Color.WHITE);
         mTextColor =loadedFontColor!=0?loadedFontColor:Color.WHITE;
         // load visibility config
-        boolean clock=prefs.getBoolean("clockVisible", true);
-        boolean battery=prefs.getBoolean("batteryVisible", true);
-        boolean timer=prefs.getBoolean("timerVisible", true);
-        boolean seconds=prefs.getBoolean("secondsVisible", true);
+        boolean clock=prefs.getBoolean(CLOCK_VISIBLE_EXTRA, true);
+        boolean battery=prefs.getBoolean(BATTERY_VISIBLE_EXTRA, true);
+        boolean timer=prefs.getBoolean(TIMER_VISIBLE_EXTRA, true);
+        boolean seconds=prefs.getBoolean(SECONDS_VISIBLE_EXTRA, true);
         mVisibilityConfig=new VisibilityConfiguration(clock, battery, timer, seconds);
     }
 
@@ -217,6 +236,9 @@ public class ScreensaverFragment extends Fragment {
         mClockView.setTypeface(typeface);
         mTimerView.setTypeface(typeface);
         mBatteryView.setTypeface(typeface);
+        mResetButton.setTypeface(typeface);
+        mStopButton.setTypeface(typeface);
+        mStartButton.setTypeface(typeface);
     }
 
     @Override

@@ -50,8 +50,7 @@ public final class VisibilityConfiguration implements Parcelable {
     @NonNull
     @Override
     public String toString() {
-        return String.format(
-                "VisibilityConfiguration{clock=%s, battery=%s, timer=%s, seconds=%s}"
+        return String.format("VisibilityConfiguration{clock=%s, battery=%s, timer=%s, seconds=%s}"
                 , clock, battery, timer, seconds);
     }
 }
