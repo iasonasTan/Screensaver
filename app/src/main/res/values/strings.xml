@@ -15,4 +15,6 @@
     <string name="show_battery">Show battery</string>
     <string name="settings_access_denied">Cannot access settings because device is locked!</string>
     <string name="show_seconds">Show seconds</string>
+    <string name="settings">Settings</string>
+    <string name="clock_size">Clock size:</string>
 </resources>

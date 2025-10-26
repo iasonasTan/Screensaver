@@ -104,6 +104,27 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/clock_size"
+                android:shadowColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <SeekBar
+                android:outlineAmbientShadowColor="@color/white"
+                android:outlineSpotShadowColor="@color/white"
+                android:id="@+id/clock_size_bar"
+                android:max="350"
+                android:min="20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <com.app.screensaver.MyButton
             android:id="@+id/back_button"
             android:text="@string/back"
