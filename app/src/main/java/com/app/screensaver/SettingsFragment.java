@@ -3,6 +3,7 @@ package com.app.screensaver;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -77,6 +79,10 @@ public class SettingsFragment extends Fragment {
             mSecsCB.setChecked(vc.seconds);
         }
 
+        SharedPreferences prefs = requireContext().getSharedPreferences(ScreensaverFragment.DEFAULT_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int sizeSp = prefs.getInt(ScreensaverFragment.SIZE_EXTRA, 170);
+        SeekBar bar = view.findViewById(R.id.clock_size_bar);
+        bar.setProgress(sizeSp);
     }
 
     private void setOnClickListeners(View view) {
@@ -98,22 +104,38 @@ public class SettingsFragment extends Fragment {
             requireContext().sendBroadcast(intent);
         });
 
-        view.findViewById(R.id.change_color_button).setOnClickListener(v -> {
-            int initialColor=Color.WHITE;
-            new yuku.ambilwarna.AmbilWarnaDialog(requireContext(), initialColor, new yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener() {
-                @Override
-                public void onOk(yuku.ambilwarna.AmbilWarnaDialog dialog, int color) {
-                    Intent intent=new Intent(ScreensaverFragment.ACTION_CHANGE_COLOR).setPackage(requireContext().getPackageName());
-                    intent.putExtra(ScreensaverFragment.COLOR_EXTRA, color);
-                    requireContext().sendBroadcast(intent);
-                }
+        SeekBar seekBar = view.findViewById(R.id.clock_size_bar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+                Intent intent = new Intent(ScreensaverFragment.ACTION_CHANGE_SIZE).setPackage(requireContext().getPackageName());
+                intent.putExtra(ScreensaverFragment.SIZE_EXTRA, bar.getProgress());
+                requireContext().sendBroadcast(intent);
+            }
 
-                @Override
-                public void onCancel(yuku.ambilwarna.AmbilWarnaDialog dialog) {
-                    // nothing
-                }
-            }).show();
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
+
+        view.findViewById(R.id.change_color_button).setOnClickListener(v ->
+                new yuku.ambilwarna.AmbilWarnaDialog(requireContext(), ScreensaverFragment.sTextColor, new yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(yuku.ambilwarna.AmbilWarnaDialog dialog, int color) {
+                Intent intent=new Intent(ScreensaverFragment.ACTION_CHANGE_COLOR).setPackage(requireContext().getPackageName());
+                intent.putExtra(ScreensaverFragment.COLOR_EXTRA, color);
+                requireContext().sendBroadcast(intent);
+            }
+
+            @Override
+            public void onCancel(yuku.ambilwarna.AmbilWarnaDialog dialog) {
+                // nothing
+            }
+        }).show());
     }
 
     private void initFontSpinner(View rootView) {
@@ -128,7 +150,6 @@ public class SettingsFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         }
-
 
         List<ContainerView> items = new ArrayList<>();
         for (int id : fontIDs) {
