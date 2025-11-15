@@ -200,7 +200,8 @@ public class ScreensaverFragment extends Fragment {
             Bitmap bitmap = ImageDecoder.decodeBitmap(imageSource);
             mImageView.setImageBitmap(bitmap);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Log.d("image_setting", "Background image is deleted or moved.");
+            Toast.makeText(requireContext(), "Background Image is deleted or moved.", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -144,10 +144,11 @@ public class SettingsFragment extends Fragment {
         List<Integer> fontIDs = new ArrayList<>();
         for (int i = 0; i < fontResourceFields.length; i++) {
             try {
+                fontResourceFields[i].setAccessible(true);
                 fontIDs.add(fontResourceFields[i].getInt(null));
                 Log.d("dev-test", "Added font "+fontIDs.get(i));
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                Log.d("error", "Error while trying to access font field." + e.getMessage());
             }
         }
 
