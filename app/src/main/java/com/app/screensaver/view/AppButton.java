@@ -1,4 +1,4 @@
-package com.app.screensaver;
+package com.app.screensaver.view;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,15 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 
-public class MyButton extends AppCompatButton {
+import com.app.screensaver.R;
+
+public class AppButton extends AppCompatButton {
     private final Vibrator mVibrator;
     private final VibrationEffect mActionDownVibeEffect =VibrationEffect.createOneShot(40, VibrationEffect.EFFECT_TICK);
 
-    public MyButton(@NonNull Context context) {
+    public AppButton(@NonNull Context context) {
         this(context, null);
     }
 
-    public MyButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public AppButton(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mVibrator=context.getSystemService(Vibrator.class);
         setBackgroundResource(R.drawable.button_background);
@@ -27,10 +29,16 @@ public class MyButton extends AppCompatButton {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean performClick() {
         animateThis();
+        mVibrator.vibrate(mActionDownVibeEffect);
+        return super.performClick();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mVibrator.vibrate(mActionDownVibeEffect);
+            performClick();
         }
         return super.onTouchEvent(event);
     }

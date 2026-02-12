@@ -53,21 +53,21 @@
         android:orientation="horizontal"
         android:layout_below="@id/timer_textview">
 
-        <com.app.screensaver.MyButton
+        <com.app.screensaver.view.AppButton
             android:text="@string/start"
             android:id="@+id/start_timer_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
 
-        <com.app.screensaver.MyButton
+        <com.app.screensaver.view.AppButton
             android:text="@string/stop"
             android:id="@+id/stop_timer_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
 
-        <com.app.screensaver.MyButton
+        <com.app.screensaver.view.AppButton
             android:text="@string/reset"
             android:id="@+id/reset_timer_button"
             android:layout_weight="1"

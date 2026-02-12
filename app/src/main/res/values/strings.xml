@@ -17,4 +17,5 @@
     <string name="show_seconds">Show seconds</string>
     <string name="settings">Settings</string>
     <string name="clock_size">Clock size:</string>
+    <string name="use_24_hour_format">Use 24-Hour format</string>
 </resources>

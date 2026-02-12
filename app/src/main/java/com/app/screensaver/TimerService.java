@@ -9,13 +9,15 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.app.screensaver.page.ScreensaverFragment;
+
 import java.util.Locale;
 import java.util.Objects;
 
 public class TimerService extends Service {
-    static final String ACTION_START = "screensaver.timer.START";
-    static final String ACTION_STOP  = "screensaver.timer.STOP";
-    static final String ACTION_RESET = "screensaver.timer.RESET";
+    public static final String ACTION_START = "screensaver.timer.START";
+    public static final String ACTION_STOP  = "screensaver.timer.STOP";
+    public static final String ACTION_RESET = "screensaver.timer.RESET";
 
     private long mStartTime = -1, mPauseTime = -1, mPausedDuration = 0;
     private boolean mRunning = false;

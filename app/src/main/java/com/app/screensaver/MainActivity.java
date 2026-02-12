@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowInsets;
@@ -24,6 +23,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.app.screensaver.page.ScreensaverFragment;
+import com.app.screensaver.page.SettingsFragment;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,9 +38,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String ACTION_CHANGE_FRAGMENT = "screensaver.main.CHANGE_FRAGMENT";
+    public static final String FRAGMENT_CLASS_EXTRA   = "screensaver.main.FRAGMENT_CLASS";
+
     private final List<Fragment> mFragmentsList = new ArrayList<>();
-    static final String ACTION_CHANGE_FRAGMENT  = "screensaver.main.CHANGE_FRAGMENT";
-    static final String FRAGMENT_CLASS_EXTRA    = "screensaver.main.FRAGMENT_CLASS";
 
     // listening on action CHANGE_FRAGMENT
     private final BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
@@ -72,17 +75,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         configSystemUI();
 
+        try {
+            ImageCallbacks.init(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         mFragmentsList.add(new ScreensaverFragment());
         mFragmentsList.add(new SettingsFragment());
+
         ContextCompat.registerReceiver(this, broadcastReceiver, new IntentFilter(ACTION_CHANGE_FRAGMENT), ContextCompat.RECEIVER_NOT_EXPORTED);
 
-        getFragment(ScreensaverFragment.class).loadSavedPreferences(getApplicationContext());
-        setFragment(ScreensaverFragment.class);
-        grantPermissions();
-        new Thread(this::checkForUpdates).start();
+        requestPermissions();
+
+        if(savedInstanceState == null)
+            setFragment(ScreensaverFragment.class);
     }
 
-    private void grantPermissions() {
+    private void requestPermissions() {
         if(checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED)
             requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, 1001);
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
@@ -93,14 +103,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-        for (BroadcastReceiver receiver : getFragment(ScreensaverFragment.class).getReceivers()) {
-            unregisterReceiver(receiver);
-        }
     }
 
     public void setFragment(Class<? extends Fragment> fragmentClass) throws NoSuchElementException {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main,
-                Objects.requireNonNull(getFragment(fragmentClass))).commit();
+        Fragment fragmentToShow = getFragment(fragmentClass);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main, fragmentToShow)
+                .commit();
     }
 
     private void configSystemUI() {
@@ -119,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
         setTurnScreenOn(true);
     }
 
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("unused")
     private void checkForUpdates() {
         try {
             Log.d("net-test", "Checking for updates...");
