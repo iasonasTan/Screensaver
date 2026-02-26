@@ -19,7 +19,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class ImageCallbacks implements View.OnClickListener, ActivityResultCallback<ActivityResult> {
-    public static void init(Context context) throws IOException {
+    public static Path sImagePath = null;
+
+    public static void initIfNotInitialized(Context context) throws IOException {
         if (sImagePath == null) {
             String filesDirStr = context.getFilesDir().getAbsolutePath();
             Path imageDirectory = Paths.get(filesDirStr, "background");
@@ -28,12 +30,9 @@ public final class ImageCallbacks implements View.OnClickListener, ActivityResul
                 Files.createDirectory(imageDirectory);
             if(!Files.exists(sImagePath))
                 Files.createFile(sImagePath);
-        } else {
-            throw new IllegalStateException("Already initialized.");
         }
     }
 
-    public static Path sImagePath = null;
     private final ActivityResultLauncher<Intent> mPickImageLauncher;
     private final Context context;
 

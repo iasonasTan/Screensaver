@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         configSystemUI();
 
         try {
-            ImageCallbacks.init(this);
+            ImageCallbacks.initIfNotInitialized(this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
